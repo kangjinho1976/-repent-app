@@ -1,11 +1,11 @@
-// [회개하자!_Web_V 1.0_app.js_전체_마스터본 | 작성일: 2026-07-03 20:46 KST]
+// [회개하자!_Web_V1.1_app.js_전체_마스터본 | 작성일: 2026-07-04 10:15 KST]
 /**
- * [V 1.0 업데이트 상세 내역]
- * 1. 기본 기도문 복원 창의 체크박스가 긴 텍스트에 밀려 찌그러지는 현상 방어 (flex-shrink: 0 적용).
- * 2. 웰컴 메시지 상태에서 "기도문 신규입력" 버튼 노출 (공백/줄바꿈 무시).
- * 3. 중앙 메뉴 6버튼 1줄 배치 UI에 맞춘 "기도문관리" 통합 팝업창 연동 유지.
- * 4. 이전 V4.6의 하단 팝업 엔진, 타이머 숨김, TTS 상태 연동 로직 100% 완전 유지.
- * 5. 어떠한 코드 압축이나 생략 없이 처음부터 끝까지 완전한 풀버전 코딩.
+ * [V1.1 업데이트 상세 내역]
+ * 1. 타이머 동작(기도 실행) 시 하단 기도창 우측에 '메뉴숨기기' 버튼 추가.
+ * 2. '메뉴숨기기' 클릭 시 상단 앱바, 입력/타이머 패널, 중앙 메뉴 패널을 숨겨 화면을 최대화.
+ * 3. 최대화 상태에서 '메뉴보이기'로 버튼 텍스트 토글 및 원래 상태 복원 기능.
+ * 4. 타이머 정지 시 최대화 모드가 자동으로 해제되도록 복원 로직(resetFullscreen) 연동.
+ * 5. 어떠한 코드 압축이나 생략 없이 처음부터 끝까지 완전한 풀버전 코딩 유지.
  */
 
 // ============================================================================
@@ -160,7 +160,7 @@ async function loadAssetMessages() {
             state.firstWelcomeMsg = state.welcomeList[0] || "";
         } else { throw new Error(); }
     } catch (error) {
-        state.firstWelcomeMsg = "🙏 회개하자! V 1.0\n환영합니다.";
+        state.firstWelcomeMsg = "🙏 회개하자! V1.1\n환영합니다.";
         state.welcomeList = [state.firstWelcomeMsg];
     }
 
@@ -229,6 +229,40 @@ function updateTtsToolbarVisibility() {
     }
 }
 
+// ★ [V1.1 신설] 메뉴숨기기 토글 로직
+function toggleFullscreen() {
+    const topAppBar = document.getElementById('top-app-bar');
+    const panelInput = document.getElementById('panel-input');
+    const panelMenu = document.getElementById('panel-menu');
+    const btnToggle = document.getElementById('btn-toggle-fullscreen');
+    
+    if (!topAppBar || !panelInput || !panelMenu || !btnToggle) return;
+
+    if (topAppBar.classList.contains('hidden')) {
+        // 복구 (메뉴보이기 상태에서 클릭)
+        resetFullscreen();
+    } else {
+        // 숨기기 (메뉴숨기기 상태에서 클릭)
+        topAppBar.classList.add('hidden');
+        panelInput.classList.add('hidden');
+        panelMenu.classList.add('hidden');
+        btnToggle.innerText = "🔽 메뉴보이기";
+    }
+}
+
+// ★ [V1.1 신설] 메뉴숨기기 모드 원상 복원
+function resetFullscreen() {
+    const topAppBar = document.getElementById('top-app-bar');
+    const panelInput = document.getElementById('panel-input');
+    const panelMenu = document.getElementById('panel-menu');
+    const btnToggle = document.getElementById('btn-toggle-fullscreen');
+    
+    if (topAppBar) topAppBar.classList.remove('hidden');
+    if (panelInput) panelInput.classList.remove('hidden');
+    if (panelMenu) panelMenu.classList.remove('hidden');
+    if (btnToggle) btnToggle.innerText = "🔼 메뉴숨기기";
+}
+
 // 웰컴 메시지 공백 완벽 제거 비교로 "신규입력" 정확도 향상
 function updateEditButtonUI() {
     const btnGoEdit = document.getElementById('btn-go-edit');
@@ -256,6 +290,11 @@ function enterEditMode(initialText) {
     state.hasStarted = false; 
     pauseTimer();
     updateTtsToolbarVisibility(); 
+    
+    // 수정 모드 진입 시 최대화(메뉴숨기기) 모드는 안전하게 해제
+    resetFullscreen();
+    const btnToggle = document.getElementById('btn-toggle-fullscreen');
+    if (btnToggle) btnToggle.classList.add('hidden');
     
     const topInput = document.getElementById('edit-text-input');
     const topGuideBox = document.getElementById('top-guide-box');
@@ -315,6 +354,9 @@ function exitEditMode(saveTextToTop) {
 function setupMainUI() {
     const topInputEl = document.getElementById('edit-text-input');
     const bottomInputEl = document.getElementById('bottom-edit-input');
+
+    // ★ [V1.1 신설] 메뉴숨기기 버튼 이벤트 바인딩
+    safeBind('btn-toggle-fullscreen', 'click', toggleFullscreen);
 
     // 상단 입력창 터치 시 수정 모드
     if (topInputEl !== null) {
@@ -426,6 +468,11 @@ function setupMainUI() {
         if (timerLayout) timerLayout.classList.add('hidden'); 
         if (topInput && !state.isEditMode) topInput.classList.remove('hidden');
         
+        // 정지 시 최대화 해제 및 메뉴숨기기 버튼 가리기
+        resetFullscreen();
+        const btnToggle = document.getElementById('btn-toggle-fullscreen');
+        if (btnToggle) btnToggle.classList.add('hidden');
+
         applyReadyStatePrayerUI();
         updateTtsToolbarVisibility(); 
     });
@@ -610,6 +657,7 @@ function applyReadyStatePrayerUI() {
     const outputElement = document.getElementById('text-output');
     const scrollBox = document.querySelector('.output-scroll-box');
     const inputElement = document.getElementById('edit-text-input');
+    const btnToggle = document.getElementById('btn-toggle-fullscreen');
     
     if (outputElement === null || inputElement === null) return;
 
@@ -619,8 +667,10 @@ function applyReadyStatePrayerUI() {
 
     // 대기 상태일 때는 타이머 창을 무조건 숨긴다
     const timerLayout = document.getElementById('layout-timers');
-    if (state.hasStarted === false && timerLayout !== null) {
-        timerLayout.classList.add('hidden');
+    if (state.hasStarted === false) {
+        if (timerLayout !== null) timerLayout.classList.add('hidden');
+        if (btnToggle !== null) btnToggle.classList.add('hidden');
+        resetFullscreen();
     }
 
     if (cleanedContent === "" || cleanedContent === cleanedWelcomeMsg || rawContent.includes("다음단계]를 누르세요")) {
@@ -695,6 +745,12 @@ function applyReadyStatePrayerUI() {
 function updateDisplay() {
     updateEditButtonUI(); 
     updateTtsToolbarVisibility(); 
+    
+    // 타이머 동작 중(진행)일 때만 메뉴숨기기 버튼을 보여줌
+    const btnToggle = document.getElementById('btn-toggle-fullscreen');
+    if (state.hasStarted === true && state.isEditMode === false) {
+        if (btnToggle) btnToggle.classList.remove('hidden');
+    }
     
     const inputElement = document.getElementById('edit-text-input');
     if (inputElement === null) return;
@@ -1653,7 +1709,7 @@ async function showDefaultTemplatesRestoreDialog() {
     templatesArray.forEach(function(templateText) {
         const itemRow = createEl('div', 'display:flex; padding:14px 0; border-bottom:1px solid #F1F3F5; cursor:pointer; align-items:flex-start;');
         
-        // ★ [V 1.0 핵심 수정] 체크박스가 텍스트 길이에 밀려 찌그러지지 않도록 flex-shrink: 0 속성 강제 주입
+        // 체크박스가 텍스트 길이에 밀려 찌그러지지 않도록 flex-shrink: 0 속성 강제 주입 (V1.0 유지)
         const checkboxEl = createEl('input', 'margin-right:6px; margin-top:4px; transform:scale(1.0); cursor:pointer; flex-shrink:0;');
         checkboxEl.type = 'checkbox';
         const textEl = createEl('div', 'flex:1; font-size:15px; line-height:1.4; color:#1A1A1C; overflow-wrap:break-word;', templateText.replace(/</g, "&lt;").replace(/>/g, "&gt;"));
@@ -1739,4 +1795,4 @@ function clearHistory() {
     showSimpleBottomDialog("안내", "🗑️ 모든 기도문 목록이 완전히 초기화되었습니다.");
 }
 
-// [회개하자!_Web_V 1.0_app.js_끝]
+// [회개하자!_Web_V1.1_app.js_끝]

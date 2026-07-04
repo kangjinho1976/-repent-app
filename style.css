@@ -1,4 +1,4 @@
-/* [회개하자!_Web_V 1.0_style.css_시작 | 작성일: 2026-07-03 20:44 KST] */
+/* [회개하자!_Web_V1.1_style.css_시작 | 작성일: 2026-07-04 10:10 KST] */
 
 /* =========================================================
    1. 스마트폰 앱 기본 초기화 및 터치 최적화
@@ -156,30 +156,42 @@ body {
     width: 100%; word-break: keep-all; 
 }
 
-/* [타이머 디자인 1줄(가로) 완벽 배치] */
+/* ★ [V1.1 수정] 타이머 디자인 1줄 강제 배치 (Grid 및 반응형 사이즈 적용) ★ */
 #layout-timers {
-    display: flex; flex-direction: row; justify-content: space-between; align-items: center;
-    background-color: #F0F4F8; padding: 6px 10px; 
-    border-radius: 10px; margin-top: 6px; gap: 4px;
-    flex-wrap: wrap; 
+    display: grid;
+    grid-template-columns: minmax(auto, 1fr) auto; /* 좌측:타이머 텍스트, 우측:버튼 그룹 */
+    align-items: center;
+    background-color: #F0F4F8; 
+    padding: 6px 6px; /* 좌우 여백을 약간 줄여 공간 확보 */
+    border-radius: 10px; 
+    margin-top: 6px; 
+    gap: 4px;
 }
 .timer-box { 
-    display: flex; align-items: center; gap: 6px; flex-shrink: 0;
+    display: flex; align-items: baseline; gap: 3px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
-.timer-small { font-size: 10px; font-weight: 600; color: #5F6368; }
-.timer-divider { font-size: 10px; color: #B0BEC5; }
-.timer-large { font-size: 15px; font-weight: 800; color: #007AFF; letter-spacing: 0.5px; }
+/* 화면 가로폭(vw)에 비례하여 폰트 크기가 다이내믹하게 줄어듦 (clamp 함수) */
+.timer-small { font-size: clamp(8px, 2.5vw, 10px); font-weight: 600; color: #5F6368; }
+.timer-divider { font-size: clamp(8px, 2.5vw, 10px); color: #B0BEC5; }
+.timer-large { font-size: clamp(11px, 3.5vw, 15px); font-weight: 800; color: #007AFF; letter-spacing: 0px; }
 
 .timer-controls {
-    display: flex; justify-content: flex-end; align-items: center; gap: 4px; flex-shrink: 0;
+    display: grid;
+    grid-template-columns: repeat(4, auto); /* 제어 버튼 4개를 무조건 1줄로 강제 분배 */
+    gap: 2px; /* 버튼 사이 간격 최소화 */
+    justify-content: end;
 }
 .timer-ctrl-btn {
-    border: none; border-radius: 6px; padding: 5px 8px; font-size: 10px; font-weight: 700;
-    color: #FFFFFF; cursor: pointer; transition: all 0.2s; white-space: nowrap;
+    border: none; border-radius: 6px; 
+    padding: 5px clamp(3px, 1.2vw, 8px); /* 가로폭 축소 시 버튼 패딩도 유동적으로 줄어듦 */
+    font-size: clamp(8.5px, 2.2vw, 10px); /* 가로폭 축소 시 버튼 글씨도 유동적으로 줄어듦 */
+    font-weight: 700; color: #FFFFFF; cursor: pointer; transition: all 0.2s; 
+    white-space: nowrap;
 }
 .timer-ctrl-btn:active { transform: scale(0.95); }
 
-/* ★ [V 1.0 핵심 수정] 중앙 메뉴 6버튼 1줄(가로) 완벽 배치 ★ */
+/* [V 1.0 핵심 수정 유지] 중앙 메뉴 6버튼 1줄(가로) 완벽 배치 */
 .menu-grid { 
     display: grid !important; 
     grid-template-columns: repeat(6, 1fr); /* 6개를 강제로 1줄에 똑같이 분배 */
@@ -206,7 +218,7 @@ body {
     flex: 1; min-height: 0; display: flex; flex-direction: column; margin-bottom: 0px !important;
 }
 
-/* [일반 모드 헤더 (좌: 타이틀, 우: 기도문 수정)] */
+/* [일반 모드 헤더 (좌: 타이틀, 우: 메뉴숨기기/신규입력 툴바)] */
 .output-header {
     display: flex; justify-content: space-between; align-items: center;
     margin-bottom: 6px; flex-shrink: 0; border-bottom: 1px solid #F1F3F5; padding-bottom: 6px; 
@@ -354,4 +366,4 @@ body {
 
 .hidden { display: none !important; }
 
-/* [회개하자!_Web_V 1.0_style.css_끝] */
+/* [회개하자!_Web_V1.1_style.css_끝] */
