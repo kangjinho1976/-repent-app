@@ -1,0 +1,145 @@
+<!-- [회개하자!_Web_V 1.0_index.html_시작 | 작성일: 2026-07-03 20:38 KST] -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>회개 기도 노트</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- 전면 고정 컨테이너 -->
+    <div id="app-container">
+        
+        <!-- 1. 상단 앱바 -->
+        <header class="app-header">
+            <h1 class="app-title">🙏 회개 기도 노트 V 1.0</h1>
+            <div class="author-info">
+                <span class="author-label">배포/제작</span>
+                <span class="author-name">생명의빛교회(강진호)</span>
+            </div>
+        </header>
+
+        <!-- 2. 중앙 컨텐츠 영역 -->
+        <main class="main-content">
+            
+            <!-- [입력 패널: 컴팩트 모드] -->
+            <section class="card-panel shrink-none">
+                <div class="panel-header">
+                    <span class="panel-title">✍️ 회개하자</span>
+                    <!-- 기도 중에만 보이도록 JS에서 제어할 툴바, 텍스트 변경 및 정지 버튼 추가 -->
+                    <div class="panel-tools hidden" id="tts-tools-wrapper">
+                        <button type="button" id="btn-tts-toggle" class="btn-tool bg-gray">🔇 TTS 음성읽기 : OFF</button>
+                        <button type="button" id="btn-tts-stop" class="btn-tool bg-orange hidden">⏹ 음성정지</button>
+                        <button type="button" id="btn-tts-settings" class="btn-tool bg-blue">🗣 TTS 음성설정</button>
+                    </div>
+                </div>
+                <div class="input-area">
+                    <!-- 기본 입력창 -->
+                    <textarea id="edit-text-input" placeholder="터치하여 기도문을 입력하세요"></textarea>
+                    
+                    <!-- 수정 모드 시 상단에 표시될 롤링 가이드 창 (기본 숨김) -->
+                    <div id="top-guide-box" class="hidden">
+                        <div id="top-guide-text">수정 모드 가이드 로딩중...</div>
+                    </div>
+                    
+                    <!-- [타이머 영역 1줄 배치 (대기 시 숨김, 기도 시 노출)] -->
+                    <div id="layout-timers" class="hidden">
+                        <div class="timer-box">
+                            <span id="text-timer-total" class="timer-small">누적 00:00:00</span>
+                            <span class="timer-divider">|</span>
+                            <span id="text-timer-current" class="timer-large">00:00:00</span>
+                        </div>
+                        <div class="timer-controls">
+                            <button type="button" id="btn-timer-resume" class="timer-ctrl-btn bg-blue hidden">▶ 진행</button>
+                            <button type="button" id="btn-timer-pause" class="timer-ctrl-btn bg-orange">⏸ 일시정지</button>
+                            <button type="button" id="btn-timer-stop" class="timer-ctrl-btn bg-gray">⏹ 정지</button>
+                            <button type="button" id="btn-timer-reset" class="timer-ctrl-btn bg-gray">🔄 초기화</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ★ [V 1.0 수정] 중앙 메뉴 6버튼 텍스트 간소화 (1줄 배치를 위한 준비) ★ -->
+            <section class="card-panel menu-grid shrink-none">
+                <button type="button" id="btn-history" class="menu-btn">📜<br>기도문목록</button>
+                <button type="button" id="btn-management" class="menu-btn">📂<br>기도문관리</button>
+                <button type="button" id="btn-setting-name" class="menu-btn">👤<br>이름수정</button>
+                <button type="button" id="btn-setting-number" class="menu-btn">⚙️<br>나이수정</button>
+                <button type="button" id="btn-setting-font" class="menu-btn">🎨<br>폰트변경</button>
+                <button type="button" id="btn-exit" class="menu-btn text-danger">❌<br>앱종료</button>
+            </section>
+
+            <!-- [기도문 출력 및 수정 패널] -->
+            <section class="card-panel output-panel">
+                
+                <!-- [일반 모드 헤더] -->
+                <div class="output-header" id="output-header-normal">
+                    <span class="output-header-title">✨ 오늘의 회개 기도문</span>
+                    <button type="button" id="btn-go-edit" class="edit-btn bg-blue">📝 기도문 신규입력</button>
+                </div>
+                
+                <!-- [수정 모드 전용 헤더 및 4개 제어 버튼] -->
+                <div class="output-header-edit hidden" id="output-header-edit">
+                    <span class="edit-title">📝 기도문 수정</span>
+                    <div class="edit-tools">
+                        <button type="button" id="btn-edit-clear-text" class="edit-btn bg-gray">창지우기</button>
+                        <button type="button" id="btn-edit-save-new" class="edit-btn bg-orange">새로저장</button>
+                        <button type="button" id="btn-edit-save-update" class="edit-btn bg-blue">저장</button>
+                        <button type="button" id="btn-edit-close" class="edit-btn bg-gray">닫기</button>
+                    </div>
+                </div>
+
+                <!-- [일반 모드 출력창] -->
+                <div class="output-scroll-box" id="output-normal-box">
+                    <div id="text-output">로딩 중...</div>
+                </div>
+
+                <!-- [수정 모드 하단 전용 텍스트 입력창] -->
+                <textarea id="bottom-edit-input" class="hidden" placeholder="이곳에서 기도문을 수정하세요..."></textarea>
+                
+            </section>
+            
+        </main>
+
+        <!-- 3. 하단 네비게이션 바 -->
+        <footer class="bottom-nav">
+            <button type="button" id="btn-once-more" class="nav-btn bg-blue">🔄 다시</button>
+            <button type="button" id="btn-previous" class="nav-btn bg-orange">◀ 이전</button>
+            <button type="button" id="btn-next" class="nav-btn bg-green nav-large">다음 단계 ▶</button>
+        </footer>
+    </div>
+
+    <!-- 4. 안드로이드 스타일 팝업 모달창 -->
+    <div id="modal-overlay" class="hidden">
+        <div class="dialog-box">
+            
+            <div class="dialog-header">
+                <h3 id="modal-title">타이틀</h3>
+                <!-- [상단 버튼 영역: 기능형 팝업 전용] -->
+                <div class="dialog-actions" id="modal-header-actions">
+                    <button type="button" id="modal-btn-negative" class="btn-top-action text-gray">닫기(취소)</button>
+                    <button type="button" id="modal-btn-positive" class="btn-top-action text-blue hidden">저장(적용)</button>
+                </div>
+            </div>
+            
+            <div class="dialog-divider" id="modal-divider-top"></div>
+            
+            <div class="dialog-body" id="modal-content">
+                <!-- 자바스크립트 주입 영역 -->
+            </div>
+            
+            <!-- [하단 알림/확인성 팝업을 위한 하단 버튼 영역] -->
+            <div class="dialog-divider hidden" id="modal-divider-bottom"></div>
+            <div class="dialog-footer hidden" id="modal-footer-actions">
+                <button type="button" id="modal-btn-bottom-negative" class="btn-footer-action bg-gray">닫기(취소)</button>
+                <button type="button" id="modal-btn-bottom-positive" class="btn-footer-action bg-blue hidden">확인</button>
+            </div>
+            
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
+<!-- [회개하자!_Web_V 1.0_index.html_끝] -->
