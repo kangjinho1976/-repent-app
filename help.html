@@ -1,0 +1,64 @@
+<!-- [회개하자!_Web_V1.3.1_help.html_시작 | 작성일: 2026-07-05 18:28 KST] -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>회개 기도 노트 - 도움말</title>
+    <style>
+        body { font-family: 'Pretendard', 'Noto Sans KR', sans-serif; background-color: #F4F6F9; color: #1A1A1C; line-height: 1.6; margin: 0; padding: 0; word-break: keep-all; }
+        .help-container { max-width: 600px; margin: 0 auto; background: #FFFFFF; padding: 20px 20px 40px 20px; box-shadow: 0 4px 16px rgba(0,0,0,0.05); min-height: 100vh; }
+        
+        .close-bar { position: sticky; top: 0; z-index: 100; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(5px); padding: 12px 0; border-bottom: 1px solid #E9ECEF; text-align: center; margin-bottom: 20px; }
+        .btn-close-app { background-color: #1A1A1C; color: #FFFFFF; border: none; border-radius: 12px; padding: 14px 24px; font-size: 16px; font-weight: 900; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.15); width: 90%; }
+        .btn-close-app:active { transform: scale(0.96); }
+
+        .header-title { text-align: center; color: #007AFF; font-size: 22px; font-weight: 900; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 2px dashed #E9ECEF; }
+        .section-title { font-size: 18px; font-weight: 900; color: #1A1A1C; margin-top: 32px; margin-bottom: 14px; display: flex; align-items: center; }
+        .section-title::before { content: ""; display: inline-block; width: 5px; height: 18px; background-color: #007AFF; margin-right: 8px; border-radius: 3px; }
+        .info-box { background-color: #F8F9FA; border: 1px solid #E9ECEF; border-radius: 12px; padding: 16px; margin-bottom: 16px; }
+        .info-box p { margin: 0 0 10px 0; font-size: 15px; color: #495057; }
+        .highlight { color: #007AFF; font-weight: 900; }
+        .danger { color: #FF3B30; font-weight: 900; }
+        ul { padding-left: 24px; margin: 0 0 16px 0; }
+        li { font-size: 15px; color: #495057; margin-bottom: 10px; }
+        .step-badge { display: inline-flex; align-items: center; justify-content: center; background: #007AFF; color: white; width: 22px; height: 22px; font-size: 13px; font-weight: 900; border-radius: 50%; margin-right: 8px; }
+        .shield-box { background: #F4FBED; border: 1px solid #E9DCAE; border-radius: 12px; padding: 18px; }
+        code { background: #E8EBEF; padding: 3px 6px; border-radius: 6px; font-family: monospace; font-size: 14px; color: #D6336C; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="help-container">
+        <div class="close-bar"><button class="btn-close-app" onclick="window.close()">❌ 창 닫고 앱으로 돌아가기</button></div>
+        
+        <div class="header-title">🙏 회개 기도 노트 V1.3 사용법</div>
+
+        <div class="section-title">1. 처음 시작하는 분들을 위한 3단계</div>
+        <div class="info-box" style="background:#E8F3FF; border-color:#B3D8FF;">
+            <p><span class="step-badge">1</span> <strong>기도 목록 선택:</strong> 중앙 메뉴의 <span class="highlight">[기도문 목록]</span>을 누르고 원하는 기도를 선택합니다.</p>
+            <p><span class="step-badge">2</span> <strong>대상/나이 세팅:</strong> 기도를 드릴 대상의 <span class="highlight">[이름 설정]</span>과 연령대인 <span class="highlight">[나이 설정]</span>을 맞춰주세요.</p>
+            <p><span class="step-badge">3</span> <strong>기도 시작:</strong> 하단의 <span class="highlight">[다음 단계 ▶]</span>를 누르면 타이머와 함께 기도가 시작됩니다.</p>
+        </div>
+
+        <div class="section-title">2. 기도문 작성 및 변환 규칙</div>
+        <div class="info-box">
+            <p>자동 변환 기능을 사용하면 훨씬 효율적인 기도가 가능합니다.</p>
+            <ul>
+                <li><strong>이름 변환:</strong> 기도문 내에 <code>&lt;홍길동&gt;</code> 이라고 적으면 [이름 설정]에 등록된 이름으로 자동 치환됩니다.</li>
+                <li><strong>나이 변환:</strong> <code>[ ]살</code> 또는 <code>[ ]대</code>라고 적어두면, [나이 설정] 값이 숫자로 자동 변경됩니다.</li>
+                <li><strong>주의사항:</strong> 반드시 <code>&lt; &gt;</code>와 <code>[ ]</code> 괄호를 정확히 사용해야 기계가 인식합니다.</li>
+            </ul>
+        </div>
+
+        <div class="section-title">3. 개인정보 보안 및 데이터 안전</div>
+        <div class="shield-box">
+            <p><strong>🔒 내 기도 데이터는 어디에 저장되나요?</strong></p>
+            <p>이 앱은 외부 서버를 거치지 않는 <strong>오프라인 로컬 저장 방식</strong>입니다. 모든 기도문, 이름, 통계 기록은 선생님의 휴대폰 기기 안에만 저장됩니다.</p>
+            <p>데이터 유출 걱정 없이 마음껏 주님 앞에 고백하십시오. 단, 기기를 바꾸실 때는 <strong>[기도문 관리]</strong>에서 반드시 <strong>'파일로 저장하기'</strong>를 실행하여 파일을 따로 보관하시기 바랍니다.</p>
+        </div>
+
+        <div class="close-bar-bottom"><button class="btn-close-app" onclick="window.close()">❌ 창 닫고 앱으로 돌아가기</button></div>
+    </div>
+</body>
+</html>
+<!-- [회개하자!_Web_V1.3.1_help.html_끝 | 작성일: 2026-07-05 18:28 KST] -->
