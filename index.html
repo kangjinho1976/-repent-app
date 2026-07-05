@@ -1,4 +1,4 @@
-<!-- [회개하자!_Web_V1.3.1_index.html_시작 | 작성일: 2026-07-05 18:21 KST] -->
+<!-- [회개하자!_Web_V1.3.3_index.html_시작 | 작성일: 2026-07-05 23:42 KST] -->
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -6,10 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>회개 기도 노트</title>
     
-    <!-- ★ [V1.3.1 신규/수정 6] 6종 폰트 지원을 위한 구글 웹폰트 로드 ★ -->
+    <!-- ★ [V1.3.3 신규/수정 4] 본명조(Noto Serif KR), 주아체(Jua) 포함 6종 웹폰트 안전 로드 ★ -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Gowun+Batang&family=Nanum+Gothic:wght@400;700;900&family=Nanum+Myeongjo:wght@400;700;900&family=Nanum+Pen+Script&family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Gowun+Batang&family=Jua&family=Nanum+Gothic:wght@400;700;900&family=Nanum+Myeongjo:wght@400;700;900&family=Noto+Sans+KR:wght@400;700;900&family=Noto+Serif+KR:wght@400;700;900&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="style.css">
 </head>
@@ -19,8 +19,8 @@
         
         <!-- 1. 상단 앱바 -->
         <header class="app-header" id="top-app-bar">
-            <!-- [V1.3.1 버전 갱신] -->
-            <h1 class="app-title">🙏 회개 기도 노트 V1.3.1</h1>
+            <!-- [V1.3.3 버전 갱신] -->
+            <h1 class="app-title">🙏 회개 기도 노트 V1.3.3</h1>
             <div class="author-info">
                 <span class="author-label">배포/제작</span>
                 <span class="author-name">생명의빛교회(강진호)</span>
@@ -67,18 +67,17 @@
                 </div>
             </section>
 
-            <!-- ★ [V1.3.1 혁신 업데이트/수정 1] 중앙 메뉴 8버튼 (가로 4칸 x 세로 2줄) 슬림화 ★ -->
-            <!-- 아이콘(이모지)과 줄바꿈(<br>)을 완전히 삭제하여 모던하고 기독성 좋은 그리드 형태로 변경 -->
+            <!-- ★ 중앙 메뉴 8버튼 (가로 4칸 x 세로 2줄) ★ -->
             <section class="card-panel menu-grid shrink-none" id="panel-menu">
                 <button type="button" id="btn-history" class="menu-btn">기도문 목록</button>
                 <button type="button" id="btn-management" class="menu-btn">기도문 관리</button>
-                <button type="button" id="btn-menu-stats" class="menu-btn text-blue" style="color: #007AFF !important; font-weight: 900;">통계 자료</button>
+                <button type="button" id="btn-menu-stats" class="menu-btn text-blue" style="color: #495057 !important; font-weight: 900;">통계 자료</button>
                 <button type="button" id="btn-menu-help" class="menu-btn" onclick="window.open('help.html')">도움말</button>
                 
                 <button type="button" id="btn-setting-name" class="menu-btn">이름 설정</button>
                 <button type="button" id="btn-setting-number" class="menu-btn">나이 설정</button>
-                <button type="button" id="btn-setting-font" class="menu-btn">화면 설정</button>
-                <button type="button" id="btn-exit" class="menu-btn text-danger">앱 종료</button>
+                <button type="button" id="btn-setting-font" class="menu-btn">폰트 설정</button>
+                <button type="button" id="btn-exit" class="menu-btn text-danger"> ❌ 앱 종료</button>
             </section>
 
             <!-- [기도문 출력 및 수정 패널] -->
@@ -123,7 +122,7 @@
         </footer>
     </div>
 
-    <!-- 4. 안드로이드 스타일 팝업 모달창 (통계창을 포함하여 범용으로 사용됨) -->
+    <!-- 4. 안드로이드 스타일 팝업 모달창 -->
     <div id="modal-overlay" class="hidden">
         <div class="dialog-box">
             
@@ -156,4 +155,4 @@
     <script src="app.js"></script>
 </body>
 </html>
-<!-- [회개하자!_Web_V1.3.1_index.html_끝 | 작성일: 2026-07-05 18:21 KST] -->
+<!-- [회개하자!_Web_V1.3.3_index.html_끝 | 작성일: 2026-07-05 23:42 KST] -->

@@ -1,10 +1,11 @@
-/* [회개하자!_Web_V1.3.1_app.js_시작 | 작성일: 2026-07-05 18:10 KST] */
+/* [회개하자!_Web_V1.3.3_app.js_시작 | 작성일: 2026-07-05 23:33 KST] */
 /**
- * [V1.3.1 패치 업데이트 내역]
- * 1. 통계 대시보드(stats.js) 브릿지 연결 강화 및 렌더링 딜레이(150ms) 확보 (오류 픽스)
- * 2. 2분 무반응 자동 정지, 10초 오토세이브, UID 이름 관리 완벽 유지
- * 3. 폰트 6종 지원 및 굵게(Bold) 토글 시스템 + 실시간 미리보기 유지
- * 4. 기존 V1.1의 TTS, 대수 계산, 화면 복원 엔진 100% 보존
+ * [V1.3.3 패치 업데이트 내역]
+ * 1. [수정 4] 폰트 교체: 본명조(Noto Serif KR), 주아체(Jua) 적용
+ * 2. [수정 5] 집중력 저하 방지: 설정/저장 완료 시 불필요한 알람 팝업 전면 삭제 (고요한 적용)
+ * 3. [수정 6] 앱 종료 강제화: 브라우저 환경 호환 window.close() 및 about:blank 전환 적용
+ * 4. [수정 7] 타이머 자동 재개(Auto-Resume): 팝업 닫을 때 이전 타이머 상태 기억 후 자동 실행
+ * 5. 기존 통계 엔진 연동, 10초 오토세이브, 2분 무반응 정지 100% 무손실 보존
  */
 
 // ============================================================================
@@ -26,11 +27,12 @@ const state = {
     ttsSpeed: 1.0, selectedVoiceName: null, isTtsEnabled: false,
     
     secondsCurrent: 0, secondsTotal: 0, isTimerRunning: false,
+    wasTimerRunningBeforeMenu: false, // [수정 7] 메뉴 진입 전 타이머 상태 기억 변수
     
     welcomeList: ["기도를 시작하려면 [다음단계]를 누르세요."],
     guideList: [
         "📝 [수정 모드 안내]\n<이름> 입력 시 이름이 자동 변환됩니다.\n[ ]살, [ ]대 입력 시 자동 증감됩니다.",
-        "💡 [수정 모드 팁]\n하단 입력창에서 기도문을 자유롭게 수정하세요.\n수정 완료 후 우측의 '저장'을 꼭 눌러주세요."
+        "💡 [수정 모드 팁]\n하단 입력창에서 기도문을 자유롭게 수정하세요.\n수정 완료 후 우측의 '저장'을 눌러주세요."
     ],
     firstWelcomeMsg: "",
     currentRollIndex: 0,
@@ -174,7 +176,7 @@ async function loadAssetMessages() {
             state.firstWelcomeMsg = state.welcomeList[0] || "";
         } else { throw new Error(); }
     } catch (error) {
-        state.firstWelcomeMsg = "🙏 회개하자! V1.3\n환영합니다.";
+        state.firstWelcomeMsg = "🙏 회개하자! V1.3.3\n환영합니다.";
         state.welcomeList = [state.firstWelcomeMsg];
     }
     try {
@@ -270,6 +272,8 @@ function updateEditButtonUI() {
 
 function enterEditMode(initialText) {
     state.isEditMode = true; originalTextBeforeEdit = initialText || "";
+    // [수정 7] 타이머가 돌고 있었는지 상태 기억
+    state.wasTimerRunningBeforeMenu = state.isTimerRunning; 
     state.hasStarted = false; pauseTimer(); updateTtsToolbarVisibility(); 
     resetFullscreen();
     const btnToggle = document.getElementById('btn-toggle-fullscreen');
@@ -323,6 +327,12 @@ function exitEditMode(saveTextToTop) {
     autoDetectModeFromText(currentText);
     applyReadyStatePrayerUI();
     updateTtsToolbarVisibility();
+    
+    // [수정 7] 수정 모드 빠져나올 때 타이머 자동 복구
+    if (state.wasTimerRunningBeforeMenu) {
+        startTimer();
+        state.wasTimerRunningBeforeMenu = false;
+    }
 }
 
 function setupMainUI() {
@@ -344,13 +354,13 @@ function setupMainUI() {
     });
 
     safeBind('btn-edit-clear-text', 'click', function() { if (bottomInputEl) { bottomInputEl.value = ""; bottomInputEl.focus(); } });
+    
+    // [수정 5] 집중력 유지를 위해 저장 완료 팝업 알림 무음 처리 (고요한 적용)
     safeBind('btn-edit-save-new', 'click', function() {
-        if (bottomInputEl && bottomInputEl.value.trim() !== "") { saveToHistory(bottomInputEl.value); showSimpleBottomDialog("안내", "✅ 새 기도문으로 기도창고에 추가되었습니다."); exitEditMode(true); } 
-        else { showSimpleBottomDialog("경고", "⚠️ 저장할 내용이 없습니다."); }
+        if (bottomInputEl && bottomInputEl.value.trim() !== "") { saveToHistory(bottomInputEl.value); exitEditMode(true); } 
     });
     safeBind('btn-edit-save-update', 'click', function() {
-        if (bottomInputEl && bottomInputEl.value.trim() !== "") { updateHistoryItem(originalTextBeforeEdit, bottomInputEl.value); showSimpleBottomDialog("안내", "✅ 기존 기도문이 덮어쓰기 저장되었습니다."); exitEditMode(true); } 
-        else { showSimpleBottomDialog("경고", "⚠️ 저장할 내용이 없습니다."); }
+        if (bottomInputEl && bottomInputEl.value.trim() !== "") { updateHistoryItem(originalTextBeforeEdit, bottomInputEl.value); exitEditMode(true); } 
     });
     safeBind('btn-edit-close', 'click', function() { exitEditMode(true); });
 
@@ -361,8 +371,13 @@ function setupMainUI() {
         if (state.isTtsEnabled === true) { state.isTtsEnabled = false; refreshTtsButtonUI(); }
     });
     
+    // [수정 7] 메뉴 버튼 진입 시 기존 타이머 돌고 있었는지 변수에 기억 후 정지
     const attachPauseToMenu = (btnId, callback) => {
-        safeBind(btnId, 'click', () => { pauseTimer(); callback(); });
+        safeBind(btnId, 'click', () => { 
+            state.wasTimerRunningBeforeMenu = state.isTimerRunning;
+            pauseTimer(); 
+            callback(); 
+        });
     };
 
     attachPauseToMenu('btn-history', function() {
@@ -375,10 +390,8 @@ function setupMainUI() {
     attachPauseToMenu('btn-setting-number', showAgeSettingDialog);
     attachPauseToMenu('btn-setting-font', showFontDialog);
     
-    // ★ [통계자료 모달창 복원 및 브릿지 강화 패치] ★
     attachPauseToMenu('btn-menu-stats', function() {
         const container = createEl('div', 'width:100%; display:flex; flex-direction:column; height:100%;');
-        
         const tabRow = createEl('div', 'display:flex; background:#E8EBEF; border-radius:10px; padding:4px; margin-bottom:16px; flex-shrink:0;');
         const btnTab1 = createEl('button', 'flex:1; background:#FFFFFF; color:#007AFF; border:none; padding:10px 0; font-size:13px; font-weight:bold; border-radius:8px; cursor:pointer; box-shadow:0 2px 4px rgba(0,0,0,0.05); transition:all 0.2s;', '나의 목표');
         const btnTab2 = createEl('button', 'flex:1; background:transparent; color:#8E8E93; border:none; padding:10px 0; font-size:13px; font-weight:bold; border-radius:8px; cursor:pointer; transition:all 0.2s;', '심층 분석');
@@ -404,15 +417,10 @@ function setupMainUI() {
         
         showCustomDialog("📊 기도 통계 자료", container, null, null, true); 
         
-        // 렌더링 타이밍 딜레이 확보 (150ms) 및 전역 객체 확인 강화
         if(typeof window.renderStatsDashboard === 'function') {
             setTimeout(window.renderStatsDashboard, 150); 
         } else {
-            tabContent1.innerHTML = `
-                <div style='padding:20px; text-align:center;'>
-                    통계 엔진(stats.js) 파일이 누락되었거나 연결되지 않았습니다.<br><br>
-                    <span style='font-size:12px; color:#8E8E93;'>1. 폴더 안에 stats.js 파일이 존재하는지 확인하세요.<br>2. 브라우저에서 강력 새로고침(Ctrl+Shift+R)을 진행하세요.</span>
-                </div>`;
+            tabContent1.innerHTML = `<div style='padding:20px; text-align:center;'>통계 엔진(stats.js) 파일이 누락되었습니다.</div>`;
         }
     });
 
@@ -487,6 +495,7 @@ function onNextStepClicked() {
     const cleanedWelcome = state.firstWelcomeMsg.replace(/\s+/g, "");
     
     if (cleanedContent === "" || cleanedContent === cleanedWelcome) {
+        // 이 경고는 기도문 없이 시작하려는 필수 방어이므로 예외적으로 유지
         showSimpleBottomDialog("경고", "⚠️ 먼저 기도문을 입력하시거나, 기도문목록에서 기도를 불러와주세요."); 
         return;
     }
@@ -526,7 +535,7 @@ function handleRestartAction() {
     if (state.isGenerationMode === true) state.currentGen = state.startGen;
     else { state.currentNumber = state.startNumber; state.currentYear = state.startYear; state.currentMonth = state.startMonth; }
     resetCurrentTimer(); startTimer(); updateDisplay();
-    showSimpleBottomDialog("안내", "🔄 시작 지점으로 다시 돌아갔습니다.");
+    // [수정 5] 다시 돌아갔을 때 알림 무음 처리
 }
 
 function increaseCounter() {
@@ -736,11 +745,15 @@ function pauseTimer() {
     if (synthesis !== null) synthesis.cancel();
     const btnResume = document.getElementById('btn-timer-resume'); const btnPause = document.getElementById('btn-timer-pause');
     if (btnResume) btnResume.classList.remove('hidden'); if (btnPause) btnPause.classList.add('hidden');
+    
+    let btnNext = document.getElementById('btn-next');
+    if (btnNext) btnNext.innerText = `다음 단계 ▶`;
 }
 
 function timerRunnable() {
     if (state.isTimerRunning === true) {
         state.secondsCurrent++; state.secondsTotal++; updateTimerUI();
+        
         if (state.secondsCurrent >= 120) {
             pauseTimer();
             showSimpleBottomDialog("타이머 일시정지", "⏳ 2분이 경과하여 통계 오류 방지를 위해 타이머가 자동 일시정지 되었습니다.<br>다시 [다음 단계]를 누르시면 이어집니다.");
@@ -758,9 +771,22 @@ function updateTimerUI() {
     if (timerCurrentEl !== null) { timerCurrentEl.innerText = `${padFormat(currentHours)}:${padFormat(currentMinutes)}:${padFormat(currentSecs)}`; timerCurrentEl.style.color = "#007AFF"; }
     let timerTotalEl = document.getElementById('text-timer-total');
     if (timerTotalEl !== null) timerTotalEl.innerText = `누적 ${padFormat(totalHours)}:${padFormat(totalMinutes)}:${padFormat(totalSecs)}`;
+
+    let btnNext = document.getElementById('btn-next');
+    if (btnNext) {
+        if (state.isTimerRunning && state.secondsCurrent > 0) {
+            btnNext.innerText = `다음 단계 ▶ (${state.secondsCurrent}초)`;
+        } else {
+            btnNext.innerText = `다음 단계 ▶`;
+        }
+    }
 }
 
-function resetCurrentTimer() { state.secondsCurrent = 0; updateTimerUI(); }
+function resetCurrentTimer() { 
+    state.secondsCurrent = 0; updateTimerUI(); 
+    let btnNext = document.getElementById('btn-next');
+    if (btnNext) btnNext.innerText = `다음 단계 ▶`;
+}
 
 // ============================================================================
 // 8. 언어 변환 유틸리티 
@@ -814,15 +840,22 @@ function speakPreview() {
 }
 
 // ============================================================================
-// 9. 안드로이드 머티리얼 모달 엔진 
+// 9. 안드로이드 머티리얼 모달 엔진 및 [수정 7] 타이머 자동 재개(브릿지)
 // ============================================================================
 function showCustomDialog(titleText, contentDomElement, positiveBtnText, onPositiveClickCallback, isLargeModal = false) {
     const overlayElement = document.getElementById('modal-overlay'); const dialogBox = document.querySelector('.dialog-box'); if (!overlayElement || !dialogBox) return;
     if (isLargeModal) dialogBox.classList.add('large-modal'); else dialogBox.classList.remove('large-modal');
     document.getElementById('modal-title').innerText = titleText;
     const bodyElement = document.getElementById('modal-content'); bodyElement.innerHTML = ''; bodyElement.appendChild(contentDomElement);
-    document.getElementById('modal-header-actions').classList.remove('hidden'); document.getElementById('modal-divider-top').classList.remove('hidden'); document.getElementById('modal-divider-bottom').classList.add('hidden'); document.getElementById('modal-footer-actions').classList.add('hidden');
-    const positiveBtn = document.getElementById('modal-btn-positive'); const negativeBtn = document.getElementById('modal-btn-negative'); if (negativeBtn) negativeBtn.innerText = "닫기(취소)";
+    
+    document.getElementById('modal-header-actions').classList.remove('hidden'); 
+    document.getElementById('modal-divider-top').classList.remove('hidden'); 
+    document.getElementById('modal-divider-bottom').classList.add('hidden'); 
+    document.getElementById('modal-footer-actions').classList.add('hidden');
+    
+    const positiveBtn = document.getElementById('modal-btn-positive'); const negativeBtn = document.getElementById('modal-btn-negative'); 
+    if (negativeBtn) negativeBtn.innerText = "닫기(취소)";
+    
     if (positiveBtnText && onPositiveClickCallback) { positiveBtn.innerText = positiveBtnText; positiveBtn.classList.remove('hidden'); positiveBtn.onclick = onPositiveClickCallback; } 
     else { if (positiveBtn) positiveBtn.classList.add('hidden'); }
     overlayElement.classList.remove('hidden');
@@ -832,8 +865,15 @@ function showCustomDialogWithFooter(titleText, contentDomElement, positiveBtnTex
     const overlayElement = document.getElementById('modal-overlay'); const dialogBox = document.querySelector('.dialog-box'); if (!overlayElement || !dialogBox) return;
     dialogBox.classList.remove('large-modal'); document.getElementById('modal-title').innerText = titleText;
     const bodyElement = document.getElementById('modal-content'); bodyElement.innerHTML = ''; bodyElement.appendChild(contentDomElement);
-    document.getElementById('modal-header-actions').classList.add('hidden'); document.getElementById('modal-divider-top').classList.add('hidden'); document.getElementById('modal-divider-bottom').classList.remove('hidden'); document.getElementById('modal-footer-actions').classList.remove('hidden');
-    const footerNegBtn = document.getElementById('modal-btn-bottom-negative'); const footerPosBtn = document.getElementById('modal-btn-bottom-positive'); if (footerNegBtn) footerNegBtn.innerText = "닫기(취소)";
+    
+    document.getElementById('modal-header-actions').classList.add('hidden'); 
+    document.getElementById('modal-divider-top').classList.add('hidden'); 
+    document.getElementById('modal-divider-bottom').classList.remove('hidden'); 
+    document.getElementById('modal-footer-actions').classList.remove('hidden');
+    
+    const footerNegBtn = document.getElementById('modal-btn-bottom-negative'); const footerPosBtn = document.getElementById('modal-btn-bottom-positive'); 
+    if (footerNegBtn) footerNegBtn.innerText = "닫기(취소)";
+    
     if (positiveBtnText && onPositiveClickCallback) { footerPosBtn.innerText = positiveBtnText; footerPosBtn.classList.remove('hidden'); footerPosBtn.onclick = onPositiveClickCallback; } 
     else { if (footerPosBtn) footerPosBtn.classList.add('hidden'); }
     overlayElement.classList.remove('hidden');
@@ -843,8 +883,15 @@ function showSimpleBottomDialog(titleStr, messageStr) {
     const container = createEl('div', 'text-align:center; padding:10px 0; font-size:15px; color:#1A1A1C; line-height:1.5;'); container.innerHTML = messageStr; showCustomDialogWithFooter(titleStr, container, null, null);
 }
 
+// [수정 7] 모든 모달창이 닫힐 때 타이머 자동 복구
 function closeModal() {
-    const overlayElement = document.getElementById('modal-overlay'); if (overlayElement !== null) overlayElement.classList.add('hidden');
+    const overlayElement = document.getElementById('modal-overlay'); 
+    if (overlayElement !== null) overlayElement.classList.add('hidden');
+
+    if (state.wasTimerRunningBeforeMenu) {
+        startTimer();
+        state.wasTimerRunningBeforeMenu = false; // 복구 후 초기화
+    }
 }
 
 function createEl(tagName, cssText, innerHTMLText) {
@@ -863,8 +910,8 @@ function showFontDialog() {
     let tempFont = state.fontFamily || "'Pretendard', 'Noto Sans KR', sans-serif";
     let tempBold = state.isBold || false;
 
-    const previewBox = createEl('div', 'padding:16px; background:#F8F9FA; border-radius:12px; margin-bottom:20px; text-align:center; border:1px solid #E9ECEF;');
-    const previewText = createEl('div', `font-size:${tempSize}px; color:${tempColor}; font-family:${tempFont}; font-weight:${tempBold ? '900' : 'normal'}; line-height:1.4; transition:all 0.2s; word-break:keep-all;`, '주님, 제가 지은 죄를 회개합니다.');
+    const previewBox = createEl('div', 'height:130px; overflow-y:auto; padding:16px; background:#F8F9FA; border-radius:12px; margin-bottom:20px; display:flex; align-items:center; justify-content:center; border:1px solid #E9ECEF;');
+    const previewText = createEl('div', `font-size:${tempSize}px; color:${tempColor}; font-family:${tempFont}; font-weight:${tempBold ? '900' : 'normal'}; line-height:1.4; transition:all 0.2s; word-break:keep-all; text-align:center;`, '주님, 제가 지은 죄를 회개합니다.');
     previewBox.appendChild(previewText);
     container.appendChild(previewBox);
 
@@ -876,7 +923,6 @@ function showFontDialog() {
     };
 
     const sizeBoldRow = createEl('div', 'display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; gap:10px;');
-    
     const sizeCtrl = createEl('div', 'display:flex; align-items:center; background:#F8F9FA; border-radius:12px; padding:4px; flex:1;');
     const btnMinus = createEl('button', 'padding:10px 16px; border:none; background:none; cursor:pointer; font-size:16px;', '➖');
     const btnPlus = createEl('button', 'padding:10px 16px; border:none; background:none; cursor:pointer; font-size:16px;', '➕');
@@ -888,17 +934,13 @@ function showFontDialog() {
     sizeCtrl.appendChild(btnMinus); sizeCtrl.appendChild(inputSize); sizeCtrl.appendChild(btnPlus);
 
     const btnBold = createEl('button', `padding:12px 16px; border-radius:12px; border:none; font-weight:bold; font-size:14px; cursor:pointer; flex-shrink:0; transition:all 0.2s; background:${tempBold ? '#007AFF' : '#E8EBEF'}; color:${tempBold ? 'white' : '#495057'};`, '굵게(Bold)');
-    btnBold.onclick = () => {
-        tempBold = !tempBold;
-        btnBold.style.background = tempBold ? '#007AFF' : '#E8EBEF';
-        btnBold.style.color = tempBold ? 'white' : '#495057';
-        updatePreview();
-    };
+    btnBold.onclick = () => { tempBold = !tempBold; btnBold.style.background = tempBold ? '#007AFF' : '#E8EBEF'; btnBold.style.color = tempBold ? 'white' : '#495057'; updatePreview(); };
 
     sizeBoldRow.appendChild(sizeCtrl); sizeBoldRow.appendChild(btnBold);
     container.appendChild(createEl('div', 'font-weight:bold; font-size:14px; margin-bottom:8px; color:#8E8E93;', '글자 크기 및 굵기'));
     container.appendChild(sizeBoldRow);
 
+    // ★ [수정 4] 폰트 배열 교체 (본명조, 주아체 추가) ★
     container.appendChild(createEl('div', 'font-weight:bold; font-size:14px; margin-bottom:8px; color:#8E8E93;', '글꼴 (6종)'));
     const fontGrid = createEl('div', 'display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:20px;');
     const fontOptions = [
@@ -906,8 +948,8 @@ function showFontDialog() {
         { name: '나눔 바른고딕', val: "'Nanum Gothic', sans-serif" },
         { name: '나눔 명조', val: "'Nanum Myeongjo', serif" },
         { name: '마루 부리', val: "'Gowun Batang', serif" },
-        { name: '궁서체', val: "'Gungsuh', 'GungsuhChe', serif" },
-        { name: '감성 손글씨', val: "'Nanum Pen Script', cursive" }
+        { name: '본명조', val: "'Noto Serif KR', serif" }, // 대중적이고 아름다운 명조체
+        { name: '주아체', val: "'Jua', sans-serif" }      // 부드럽고 귀여운 폰트
     ];
 
     const fontBtns = [];
@@ -944,13 +986,9 @@ function showFontDialog() {
     container.appendChild(colorRow);
 
     showCustomDialog("🎨 폰트 설정", container, "저장(적용)", function() {
-        state.outputTextSize = tempSize;
-        state.outputTextColor = tempColor;
-        state.fontFamily = tempFont;
-        state.isBold = tempBold;
-        state.isManualFontOverride = true;
-        saveSettings();
-        applyReadyStatePrayerUI();
+        state.outputTextSize = tempSize; state.outputTextColor = tempColor; state.fontFamily = tempFont; state.isBold = tempBold; state.isManualFontOverride = true;
+        saveSettings(); applyReadyStatePrayerUI(); 
+        // [수정 5] "설정이 저장되었습니다" 팝업 생략하고 조용히 닫기
         closeModal();
     });
 }
@@ -994,7 +1032,9 @@ function showRegularNumberDialog() {
         state.currentNumber = state.startNumber; saveSettings(); resetCurrentTimer(); state.hasStarted = false; pauseTimer();
         const inputEl = document.getElementById('edit-text-input'); const timerLayout = document.getElementById('layout-timers');
         if (inputEl !== null && !state.isEditMode) inputEl.classList.remove('hidden'); if (timerLayout !== null) timerLayout.classList.add('hidden'); 
-        applyReadyStatePrayerUI(); closeModal(); showSimpleBottomDialog("안내", "⚙️ 설정이 저장되었습니다.");
+        applyReadyStatePrayerUI(); 
+        // [수정 5] 집중 방해 방지용 알림 무음 처리
+        closeModal(); 
     });
 }
 
@@ -1042,7 +1082,9 @@ function showYearMonthDialog() {
         saveSettings(); resetCurrentTimer(); state.hasStarted = false; pauseTimer();
         const inputEl = document.getElementById('edit-text-input'); const timerLayout = document.getElementById('layout-timers');
         if (inputEl !== null && !state.isEditMode) inputEl.classList.remove('hidden'); if (timerLayout !== null) timerLayout.classList.add('hidden'); 
-        applyReadyStatePrayerUI(); closeModal(); showSimpleBottomDialog("안내", "🗓️ 상세 설정이 저장되었습니다.");
+        applyReadyStatePrayerUI(); 
+        // [수정 5] 집중 방해 방지용 알림 무음 처리
+        closeModal(); 
     });
 }
 
@@ -1073,7 +1115,9 @@ function showGenerationDialog() {
         state.currentGen = state.startGen; saveSettings(); resetCurrentTimer(); state.hasStarted = false; pauseTimer();
         const inputEl = document.getElementById('edit-text-input'); const timerLayout = document.getElementById('layout-timers');
         if (inputEl !== null && !state.isEditMode) inputEl.classList.remove('hidden'); if (timerLayout !== null) timerLayout.classList.add('hidden'); 
-        applyReadyStatePrayerUI(); closeModal(); showSimpleBottomDialog("안내", "🌳 대(代) 설정이 저장되었습니다.");
+        applyReadyStatePrayerUI(); 
+        // [수정 5] 집중 방해 방지용 알림 무음 처리
+        closeModal(); 
     });
 }
 
@@ -1141,7 +1185,8 @@ function showNameSettingDialog() {
         if (topInputEl !== null && topInputEl.classList.contains('hidden') && !state.isEditMode) updateDisplay(); else applyReadyStatePrayerUI();
         renderList(); 
     }
-    renderList(); showCustomDialogWithFooter("👤 이름 무제한 관리", container, null, null);
+    renderList(); 
+    showCustomDialog("👤 이름 무제한 관리", container, null, null);
 }
 
 function showTtsSettingsDialog() { 
@@ -1171,6 +1216,7 @@ function showTtsSettingsDialog() {
             });
         }
     }
+    // [수정 5] TTS 저장 알림도 무음 적용
     container.appendChild(voiceRowBox); showCustomDialog("🔊 음성 상세 설정", container, "저장(적용)", function() { closeModal(); }, false);
 }
 
@@ -1283,10 +1329,13 @@ function showManagementDialog() {
     });
     const hiddenFileInput = createEl('input', 'display:none;'); hiddenFileInput.type = 'file'; hiddenFileInput.accept = '.txt'; hiddenFileInput.id = "hidden-import-file";
     hiddenFileInput.addEventListener('change', function(event) { if (event.target.files[0]) { processImport(event.target.files[0]); } }); container.appendChild(hiddenFileInput);
+    
     showCustomDialog("📂 기도문 관리", container, null, null, false);
 }
 
 function showTimerMenuDialog() {
+    // 타이머 팝업은 예외적으로 타이머 상태를 false로 지정하여 중복 재실행 꼬임 방어
+    state.wasTimerRunningBeforeMenu = false; 
     pauseTimer();
     const container = document.createElement('div'); container.style.cssText = "width: 100%; box-sizing: border-box;";
     const controlItems = ["▶️ 계속 진행", "⏸️ 일시정지", "🔄 타이머 초기화", "📝 직접 수정으로 복귀"];
@@ -1294,8 +1343,11 @@ function showTimerMenuDialog() {
         const ctrlBtn = createEl('button', 'width:100%; background:#F8F9FA; border:none; border-radius:12px; padding:16px; margin-bottom:12px; font-weight:bold; font-size:15px; color:#1A1A1C; cursor:pointer; box-sizing: border-box;', buttonText);
         ctrlBtn.type = "button";
         ctrlBtn.addEventListener('click', function() {
+            state.wasTimerRunningBeforeMenu = false; // 강제 초기화
             closeModal();
-            if (index === 0) startTimer(); else if (index === 1) pauseTimer(); else if (index === 2) { resetCurrentTimer(); startTimer(); }
+            if (index === 0) startTimer(); 
+            else if (index === 1) pauseTimer(); 
+            else if (index === 2) { resetCurrentTimer(); startTimer(); }
             else if (index === 3) { const inputElement = document.getElementById('edit-text-input'); let currentText = inputElement ? inputElement.value : ""; enterEditMode(currentText); }
         });
         container.appendChild(ctrlBtn);
@@ -1326,14 +1378,15 @@ async function showDefaultTemplatesRestoreDialog() {
     btnRestoreAll.addEventListener('click', function() {
         let currentItems = getPrayerList(); let timestamp = Date.now(); let reversedTemplates = [...templatesArray].reverse();
         reversedTemplates.forEach(function(templateStr, index) { currentItems = currentItems.filter(item => item.text !== templateStr); currentItems.unshift({ uid: 'P_'+(timestamp+index), text: templateStr, addedAt: timestamp + index, lastUsed: 0, useCount: 0 }); });
-        savePrayerList(currentItems); closeModal(); showHistoryListDialog(); showSimpleBottomDialog("안내", "🔄 전체 기도문이 복원되었습니다.");
+        savePrayerList(currentItems); closeModal(); showHistoryListDialog(); 
+        // [수정 5] 집중 방해 방지
     });
     btnRestoreSelected.addEventListener('click', function() {
         let currentItems = getPrayerList(); let timestamp = Date.now(); let restoreCount = 0; let reversedNodes = [...checkboxNodes].reverse();
         reversedNodes.forEach(function(itemData, index) {
             if (itemData.node.checked === true) { currentItems = currentItems.filter(item => item.text !== itemData.textContent); currentItems.unshift({ uid: 'P_'+(timestamp+index), text: itemData.textContent, addedAt: timestamp + index, lastUsed: 0, useCount: 0 }); restoreCount++; }
         });
-        if (restoreCount > 0) { savePrayerList(currentItems); closeModal(); showHistoryListDialog(); showSimpleBottomDialog("안내", `💾 ${restoreCount}개의 기도문이 복원되었습니다.`); } else { showSimpleBottomDialog("안내", "선택된 항목이 없습니다."); }
+        if (restoreCount > 0) { savePrayerList(currentItems); closeModal(); showHistoryListDialog(); } 
     });
     container.appendChild(actionButtonsRow); container.appendChild(listScrollBox); showCustomDialog("📄 기본 기도문 복원", container, null, null, true);
 }
@@ -1341,18 +1394,30 @@ async function showDefaultTemplatesRestoreDialog() {
 function showExitConfirmDialog() {
     const container = createEl('div', 'text-align:center; padding:10px 0; font-size:16px; color:#1A1A1C; line-height:1.5;');
     container.innerHTML = "정말로 앱을 종료하시겠습니까?<br>모든 설정값은 영구 저장됩니다.";
+    
+    // ★ [수정 6] 앱 종료 오류 해결 및 팝업 제거 (브라우저 강제 종료 및 about:blank 전환) ★
     showCustomDialogWithFooter("앱 종료 확인", container, "❌ 종료", function() {
-        saveSettings(); closeModal(); showSimpleBottomDialog("안내", "설정이 안전하게 저장되었습니다.<br>앱 창을 닫아주세요.");
-        try { window.close(); } catch(error) { }
+        saveSettings();
+        try { 
+            // 1차 시도: 브라우저가 직접 열었을 때 먹히는 꼼수 종료
+            window.open('','_self').close(); 
+            window.close(); 
+            // 2차 시도: 종료가 안먹히는 크롬/사파리를 위해 빈 화면으로 강제 이동
+            if (!window.closed) {
+                window.location.href = 'about:blank'; 
+            }
+        } catch(error) { 
+            window.location.href = 'about:blank';
+        }
     });
 }
 
 function exportHistoryToFile() {
-    let allItems = getPrayerList(); if (allItems.length === 0) { showSimpleBottomDialog("경고", "내보낼 기도문이 없습니다."); return; }
+    let allItems = getPrayerList(); if (allItems.length === 0) return;
     let fileContent = allItems.map(item => "%%" + item.text).join("\n\n");
     let fileBlob = new Blob([fileContent], { type: "text/plain" }); let downloadLink = document.createElement("a");
     downloadLink.href = URL.createObjectURL(fileBlob); downloadLink.download = "나의_회개_기도문.txt"; downloadLink.click();
-    showSimpleBottomDialog("안내", "📤 파일이 성공적으로 다운로드 되었습니다.");
+    // [수정 5] 다운로드는 OS에서 알려주므로 이중 알림 방지
 }
 
 function processImport(targetFile) {
@@ -1361,13 +1426,13 @@ function processImport(targetFile) {
         let loadedContent = event.target.result; let existingItems = getPrayerList(); let timestamp = Date.now();
         let splitItems = loadedContent.split("%%").filter(text => text.trim() !== "");
         splitItems.forEach(function(itemText, i) { existingItems.unshift({ uid: 'P_'+(timestamp-i), text: itemText.trim(), addedAt: timestamp-i, lastUsed: 0, useCount: 0 }); });
-        savePrayerList(existingItems); showHistoryListDialog(); showSimpleBottomDialog("안내", "📂 파일을 성공적으로 가져왔습니다.");
+        savePrayerList(existingItems); showHistoryListDialog();
     };
     fileReader.readAsText(targetFile);
 }
 
 function clearHistory() {
     let persistentData = getLocalData(); delete persistentData.savedList; saveLocalData(persistentData);
-    showSimpleBottomDialog("안내", "🗑️ 모든 기도문 목록이 완전히 초기화되었습니다.");
+    closeModal();
 }
-/* [회개하자!_Web_V1.3.1_app.js_끝 | 작성일: 2026-07-05 18:10 KST] */
+/* [회개하자!_Web_V1.3.3_app.js_끝 | 작성일: 2026-07-05 23:33 KST] */
