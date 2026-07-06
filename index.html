@@ -1,4 +1,4 @@
-<!-- [회개하자!_Web_V1.3.3_index.html_시작 | 작성일: 2026-07-05 23:42 KST] -->
+<!-- [회개하자!_Web_V1.3.4_index.html_시작 | 작성일: 2026-07-06 09:41 KST] -->
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>회개 기도 노트</title>
     
-    <!-- ★ [V1.3.3 신규/수정 4] 본명조(Noto Serif KR), 주아체(Jua) 포함 6종 웹폰트 안전 로드 ★ -->
+    <!-- ★ [V1.3.4 신규/수정 4] 본명조(Noto Serif KR), 주아체(Jua) 포함 6종 웹폰트 안전 로드 ★ -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Gowun+Batang&family=Jua&family=Nanum+Gothic:wght@400;700;900&family=Nanum+Myeongjo:wght@400;700;900&family=Noto+Sans+KR:wght@400;700;900&family=Noto+Serif+KR:wght@400;700;900&display=swap" rel="stylesheet">
@@ -17,15 +17,8 @@
     <!-- 전면 고정 컨테이너 -->
     <div id="app-container">
         
-        <!-- 1. 상단 앱바 -->
-        <header class="app-header" id="top-app-bar">
-            <!-- [V1.3.3 버전 갱신] -->
-            <h1 class="app-title">🙏 회개 기도 노트 V1.3.3</h1>
-            <div class="author-info">
-                <span class="author-label">배포/제작</span>
-                <span class="author-name">생명의빛교회(강진호)</span>
-            </div>
-        </header>
+        <!-- [V1.3.4 수정 2] 상단 앱바 물리적 삭제 및 JS 에러 방어용 더미 요소 삽입 -->
+        <div id="top-app-bar" style="display:none;"></div>
 
         <!-- 2. 중앙 컨텐츠 영역 -->
         <main class="main-content">
@@ -33,12 +26,16 @@
             <!-- [입력 패널: 컴팩트 모드] -->
             <section class="card-panel shrink-none" id="panel-input">
                 <div class="panel-header">
-                    <span class="panel-title">✍️ 회개하자</span>
+                    <!-- [V1.3.4 수정 2] 삭제된 상단바 대신 인라인으로 배포자 정보 삽입 (공간 극대화) -->
+                    <div style="display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap;">
+                        <span class="panel-title">✍️ 회개하자</span>
+                        <span style="font-size: 10px; color: #8E8E93; font-weight: 700; letter-spacing: -0.5px;">배포/제작 생명의빛교회(강진호)</span>
+                    </div>
                     <!-- 기도 중에만 보이도록 JS에서 제어할 툴바, 텍스트 변경 및 정지 버튼 추가 -->
                     <div class="panel-tools hidden" id="tts-tools-wrapper">
-                        <button type="button" id="btn-tts-toggle" class="btn-tool bg-gray">🔇 TTS 음성읽기 : OFF</button>
+                        <button type="button" id="btn-tts-toggle" class="btn-tool bg-gray">🔇음성읽기 : OFF</button>
                         <button type="button" id="btn-tts-stop" class="btn-tool bg-orange hidden">⏹ 음성정지</button>
-                        <button type="button" id="btn-tts-settings" class="btn-tool bg-blue">🗣 TTS 음성설정</button>
+                        <button type="button" id="btn-tts-settings" class="btn-tool bg-blue">🗣음성설정</button>
                     </div>
                 </div>
                 <div class="input-area">
@@ -61,13 +58,13 @@
                             <button type="button" id="btn-timer-resume" class="timer-ctrl-btn bg-blue hidden">▶ 진행</button>
                             <button type="button" id="btn-timer-pause" class="timer-ctrl-btn bg-orange">⏸ 일시정지</button>
                             <button type="button" id="btn-timer-stop" class="timer-ctrl-btn bg-gray">⏹ 정지</button>
-                            <button type="button" id="btn-timer-reset" class="timer-ctrl-btn bg-gray">🔄 초기화</button>
+                            <!-- [V1.3.4 수정 4] 초기화 버튼 DOM에서 영구 제거 완료 -->
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- ★ 중앙 메뉴 8버튼 (가로 4칸 x 세로 2줄) ★ -->
+            <!-- ★ 중앙 메뉴 8버튼 (가로 4칸 x 세로 2줄) 선생님 마스터 베이스 유지 ★ -->
             <section class="card-panel menu-grid shrink-none" id="panel-menu">
                 <button type="button" id="btn-history" class="menu-btn">기도문 목록</button>
                 <button type="button" id="btn-management" class="menu-btn">기도문 관리</button>
@@ -155,4 +152,4 @@
     <script src="app.js"></script>
 </body>
 </html>
-<!-- [회개하자!_Web_V1.3.3_index.html_끝 | 작성일: 2026-07-05 23:42 KST] -->
+<!-- [회개하자!_Web_V1.3.4_index.html_끝 | 작성일: 2026-07-06 09:41 KST] -->

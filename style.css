@@ -1,4 +1,4 @@
-/* [회개하자!_Web_V1.3.3_style.css_시작 | 작성일: 2026-07-05 23:43 KST] */
+/* [회개하자!_Web_V1.3.4_style.css_시작 | 작성일: 2026-07-06 09:43 KST] */
 
 /* =========================================================
    1. 스마트폰 앱 기본 초기화 및 터치 최적화
@@ -25,7 +25,7 @@ body {
 }
 
 /* =========================================================
-   2. 상단 앱바
+   2. 상단 앱바 (V1.3.4에서 물리적 삭제됨, 호환성 위해 클래스 유지)
 ========================================================= */
 .app-header {
     display: flex; justify-content: space-between; align-items: center;
@@ -56,7 +56,7 @@ body {
 
 /* --- 상단 입력 및 제어 패널 --- */
 .panel-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
-.panel-title { font-size: 13px; font-weight: 800; color: #1A1A1C; flex: 1; }
+.panel-title { font-size: 14px; font-weight: 900; color: #1A1A1C; flex: 1; }
 
 .panel-tools { display: flex; gap: 4px; flex-wrap: wrap; justify-content: flex-end; }
 .btn-tool { 
@@ -81,7 +81,7 @@ body {
 }
 #top-guide-text { font-size: 14px; color: #5F6368; font-weight: 700; line-height: 1.45; width: 100%; word-break: keep-all; }
 
-/* ★ [수정 2] 타이머 1행 유지 및 버튼 크기/시인성 극대화 ★ */
+/* ★ [수정 4] 타이머 제어 버튼 우측 빈자리 정렬 완료 ★ */
 #layout-timers {
     display: flex; align-items: center; justify-content: space-between; 
     background-color: #F0F4F8; padding: 8px 8px; border-radius: 10px; margin-top: 6px; gap: 4px;
@@ -94,23 +94,23 @@ body {
 .timer-divider { font-size: clamp(8px, 2.5vw, 10px); color: #B0BEC5; }
 .timer-large { font-size: clamp(11px, 3.5vw, 15px); font-weight: 900; color: #007AFF; letter-spacing: 0px; }
 
-.timer-controls { display: flex; gap: 4px; flex-shrink: 0; }
+.timer-controls { display: flex; gap: 4px; flex-shrink: 0; justify-content: flex-end; }
 .timer-ctrl-btn {
     border: none; border-radius: 8px; 
-    padding: 3px 8px; /* 기존보다 패딩을 키워 터치 영역 확보 */
-    font-size: clamp(9px, 3.0vw, 12px); /* 폰트 사이즈 확대 */
+    padding: 3px 8px; /* 선생님 마스터 세팅 유지 */
+    font-size: clamp(9px, 3.0vw, 12px); /* 선생님 마스터 세팅 유지 */
     font-weight: 900; color: #FFFFFF; cursor: pointer; transition: all 0.2s; white-space: nowrap;
 }
 .timer-ctrl-btn:active { transform: scale(0.95); }
 
-/* '정지', '초기화' 버튼 시인성 확보를 위한 다크그레이 적용 */
+/* '정지' 버튼 시인성 확보 마스터 세팅 유지 */
 .timer-ctrl-btn.bg-gray {
     background-color: #eaeaee !important;
     color: #585656 !important;
 }
 
 /* =========================================================
-   ★ [수정 3] 중앙 메뉴 8버튼 슬림화(10% 추가축소) 및 핀포인트 강조 ★
+   ★ [수정 3] 중앙 메뉴 8버튼 슬림화 및 선생님 마스터 색상 적용 ★
 ========================================================= */
 .menu-grid { 
     display: grid !important; 
@@ -123,11 +123,11 @@ body {
     background-color: #F8F9FA; 
     border: 1px solid #E9ECEF;
     border-radius: 8px; 
-    padding: 5px 2px; /* [수정 3] 높이를 10% 더 줄여 컴팩트하게 조절 */
-    min-height: 25px; /* 버튼의 최소 높이 제한 */
+    padding: 5px 2px; 
+    min-height: 25px; /* 선생님 마스터 세팅 유지 */
     font-size: clamp(10.5px, 2.8vw, 12.5px); 
     font-weight: 800; 
-    color: #495057 !important; /* 기본 버튼 텍스트 색상 차분하게 통일 */
+    color: #495057 !important; 
     cursor: pointer; 
     display: flex; align-items: center; justify-content: center;
     line-height: 1.2; touch-action: manipulation;
@@ -136,7 +136,7 @@ body {
 }
 .menu-btn:active { transform: scale(0.96); background-color: #E8EBEF; }
 
-/* [수정 3] 오직 "기도문 목록" (첫 번째) 버튼만 강력한 블루 하이라이트 */
+/* 1번 버튼 - 선생님 지정 파스텔 블루 */
 .menu-btn:nth-child(1) {
     background-color: #6ba5e4 !important;
     color: #FFFFFF !important;
@@ -145,7 +145,7 @@ body {
     box-shadow: 0 2px 6px rgba(0, 122, 255, 0.25);
 }
 
-/* [수정 3] 오직 "앱 종료" (여덟 번째) 버튼만 강력한 레드 하이라이트 */
+/* 8번 버튼 - 선생님 지정 핑크 레드 */
 .menu-btn:nth-child(8) {
     background-color: #f8325d !important;
     color: #faf9f9 !important;
@@ -195,11 +195,15 @@ body {
 .bg-green { background-color: #34C759; color: #FFFFFF !important; } 
 .bg-orange { background-color: #FF9500; color: #FFFFFF !important; } 
 
+/* ★ [수정 7, 11] 이름 무제한 관리창 등 모달 여백 극한 압축 ★ */
 #modal-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); backdrop-filter: blur(2px); z-index: 9999; display: flex; justify-content: center; align-items: center; }
 .dialog-box { width: 90%; max-width: 90%; max-height: 85%; background-color: #FFFFFF; border-radius: 18px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.15); }
+
+/* 모달창 세로 90% 확장 */
 .dialog-box.large-modal { height: 90%; max-height: 90%; }
 
-.dialog-header { display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; background-color: #FFFFFF; }
+/* 리스트가 5개 이상 보이도록 헤더/바디 패딩 대폭 축소 */
+.dialog-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; background-color: #FFFFFF; }
 #modal-title { font-size: 15px; font-weight: 900; color: #1A1A1C; margin: 0; word-break: keep-all; letter-spacing: -0.5px; }
 .dialog-actions { display: flex; gap: 6px; }
 
@@ -208,11 +212,13 @@ body {
 .text-gray { color: #8E8E93; }
 
 .dialog-divider { height: 1px; background-color: #F1F3F5; width: 100%; }
-.dialog-body { flex: 1; overflow-y: auto; padding: 18px; width: 100%; }
+
+/* 리스트 내부 쾌적화를 위한 내부 여백(padding) 18px -> 12px 축소 */
+.dialog-body { flex: 1; overflow-y: auto; padding: 12px 14px; width: 100%; }
 
 .dialog-footer {
     display: flex; justify-content: stretch; align-items: center; gap: 10px;
-    padding: 14px 18px; background-color: #FFFFFF;
+    padding: 12px 14px; background-color: #FFFFFF;
 }
 .btn-footer-action {
     flex: 1; padding: 14px; border: none; border-radius: 12px;
@@ -224,7 +230,7 @@ body {
 .hidden { display: none !important; }
 
 /* =========================================================
-   7. [V1.3.3] 통계 대시보드(stats.js) 전용 UI 디자인
+   7. [V1.3.4] 통계 대시보드(stats.js) 전용 UI 디자인
 ========================================================= */
 .progress-container { background: #E8EBEF; border-radius: 10px; height: 16px; width: 100%; overflow: hidden; margin: 10px 0; }
 .progress-fill { background: #007AFF; height: 100%; width: 0%; transition: width 0.5s ease-out; }
@@ -237,4 +243,4 @@ body {
 .tab-content-area { flex: 1; overflow-y: auto; }
 .tab-pane.hidden { display: none !important; }
 
-/* [회개하자!_Web_V1.3.3_style.css_끝 | 작성일: 2026-07-05 23:43 KST] */
+/* [회개하자!_Web_V1.3.4_style.css_끝 | 작성일: 2026-07-06 09:43 KST] */
