@@ -1,4 +1,4 @@
-<!-- [회개하자!_Web_V1.3.4_index.html_시작 | 작성일: 2026-07-06 09:41 KST] -->
+<!-- [회개하자!_Web_V1.3.8_index.html_시작 | 작성일: 2026-07-06 11:49 KST] -->
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -28,14 +28,16 @@
                 <div class="panel-header">
                     <!-- [V1.3.4 수정 2] 삭제된 상단바 대신 인라인으로 배포자 정보 삽입 (공간 극대화) -->
                     <div style="display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap;">
-                        <span class="panel-title">✍️ 회개하자</span>
-                        <span style="font-size: 10px; color: #8E8E93; font-weight: 700; letter-spacing: -0.5px;">배포/제작 생명의빛교회(강진호)</span>
+                        <!-- ★ [V1.3.8 수정 4] 타이틀 텍스트 변경: 회개하자 -> 기도하자! ★ -->
+                        <span class="panel-title">🙏 기도하자!</span>
+                        <!-- ★ [V1.3.8 수정 5] 배포자 정보에 V1.3.8 버전 정보 통합 / [V1.3.5 수정 2] 기도 시작 시 숨김 처리를 위한 고유 ID 부여 ★ -->
+                        <span id="author-info-text" style="font-size: 10px; color: #8E8E93; font-weight: 700; letter-spacing: -0.5px;">배포/제작 생명의빛교회(강진호) V1.3.8</span>
                     </div>
                     <!-- 기도 중에만 보이도록 JS에서 제어할 툴바, 텍스트 변경 및 정지 버튼 추가 -->
                     <div class="panel-tools hidden" id="tts-tools-wrapper">
-                        <button type="button" id="btn-tts-toggle" class="btn-tool bg-gray">🔇음성읽기 : OFF</button>
+                        <button type="button" id="btn-tts-toggle" class="btn-tool bg-gray">🔇 TTS 음성읽기 : OFF</button>
                         <button type="button" id="btn-tts-stop" class="btn-tool bg-orange hidden">⏹ 음성정지</button>
-                        <button type="button" id="btn-tts-settings" class="btn-tool bg-blue">🗣음성설정</button>
+                        <button type="button" id="btn-tts-settings" class="btn-tool bg-blue">🗣 TTS 음성설정</button>
                     </div>
                 </div>
                 <div class="input-area">
@@ -94,7 +96,8 @@
                     <div class="edit-tools">
                         <button type="button" id="btn-edit-clear-text" class="edit-btn bg-gray">창지우기</button>
                         <button type="button" id="btn-edit-save-new" class="edit-btn bg-orange">새로저장</button>
-                        <button type="button" id="btn-edit-save-update" class="edit-btn bg-blue">저장</button>
+                        <!-- ★ [V1.3.8 수정 3] 저장 -> 수정저장 명칭 변경 ★ -->
+                        <button type="button" id="btn-edit-save-update" class="edit-btn bg-blue">수정저장</button>
                         <button type="button" id="btn-edit-close" class="edit-btn bg-gray">닫기</button>
                     </div>
                 </div>
@@ -152,4 +155,4 @@
     <script src="app.js"></script>
 </body>
 </html>
-<!-- [회개하자!_Web_V1.3.4_index.html_끝 | 작성일: 2026-07-06 09:41 KST] -->
+<!-- ================= INDEX.HTML 끝 (이 줄이 없으면 복사가 덜 된 것입니다!) ================= -->
